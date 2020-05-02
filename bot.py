@@ -4,7 +4,7 @@ import config
 bot = telebot.TeleBot(config.TOKEN)
 
 
-@bot.message_handler(commands=['start'])  # Функция отвечает на команду 'start'
+@bot.message_handler(content_types='text')  # Функция отвечает на любой текст
 def start_message(message):
     bot.send_message(message.chat.id,
                      f"Привет <b>{message.from_user.first_name}</b>!👋\nЯ бот котрый напомнит тебе о твоих делах.\n"
