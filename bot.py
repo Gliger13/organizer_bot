@@ -16,6 +16,7 @@ dp = aiogram.Dispatcher(bot)
 
 state = None
 state_time = {}
+task_loop = {}
 
 
 def user_init(message: Message):  # Функция инициализирует пользователя и сохраняет id
@@ -75,6 +76,7 @@ async def remove_task(message):
     current_org = organizer.Organizer(user_id)
     global state
     global state_time
+    global task_loop
     if state == 'create_task_1':
         state_time[user_id] = message.text
         await bot.send_message(message.chat.id, 'Введите текст напоминания')
@@ -83,10 +85,18 @@ async def remove_task(message):
         description = message.text
         current_org.create_task(state_time[user_id], description)
         await bot.send_message(message.chat.id, 'Напоминание успешно добавлено!')
-        await run_task(message, state_time[user_id], description)
+        task = asyncio.create_task(run_task(message, state_time[user_id], description))
+        if user_id in task_loop:
+            old_info = task_loop.pop(user_id)
+            task_loop.update({user_id: old_info.update({state_time[user_id]: task})})
+        else:
+            task_loop[user_id] = {state_time[user_id]: task}
+        await task
     elif state == 'remove_task':
         time_index = message.text
+        time = list(current_org.task_list[int(time_index)].items())[0][0]  # Don't touch this!
         current_org.remove_task(int(time_index))
+        task_loop[user_id].pop(time).cancel()  # Stop async await sleep()
         await bot.send_message(message.chat.id, 'Напоминание успешно удалено!')
         state = None
 

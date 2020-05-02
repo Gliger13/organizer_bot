@@ -42,7 +42,7 @@ def update_information(user_id, task_list):
     some_dict = {user_id: task_list}
     path = "case_information.json"
     data = load_information()
-    if data:
+    if data and user_id in data:
         data.pop(str(user_id))
     data.update(some_dict)
     with open(path, 'w') as file:
