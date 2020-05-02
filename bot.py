@@ -35,7 +35,7 @@ async def start_message(message):
                            f"Напиши команду /help, чтобы увидеть доступные команды!", parse_mode='html')
 
 
-@dp.message_handler(commands=['help'])  # Функция отвечает на команду 'start'
+@dp.message_handler(commands=['help'])  # Функция отвечает на команду 'help'
 async def start_message(message):
     await bot.send_message(message.chat.id,
                            f"Список доступных команд:\n"
